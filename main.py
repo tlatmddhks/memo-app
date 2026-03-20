@@ -1,3 +1,8 @@
+import sys
+import io
+sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding='utf-8', errors='replace')
+sys.stderr = io.TextIOWrapper(sys.stderr.buffer, encoding='utf-8', errors='replace')
+
 from fastapi import FastAPI, Depends, HTTPException, Request, Form, UploadFile, File
 from fastapi.templating import Jinja2Templates
 from fastapi.responses import HTMLResponse, RedirectResponse, JSONResponse, StreamingResponse
@@ -6,7 +11,6 @@ from sqlalchemy import or_
 from database import engine, get_db
 import models
 import json
-import io
 from datetime import datetime
 
 models.Base.metadata.create_all(bind=engine)
@@ -216,8 +220,8 @@ def backup_all(db: Session = Depends(get_db)):
              "is_favorite": m.is_favorite, "is_pinned": m.is_pinned,
              "created_at": m.created_at.isoformat(), "updated_at": m.updated_at.isoformat()} for m in memos]
     return StreamingResponse(
-        io.BytesIO(json.dumps(data, ensure_ascii=False, indent=2).encode('utf-8')),
-        media_type="application/json",
+        io.BytesIO(json.dumps(data, ensure_ascii=False, indent=2).encode('utf-8-sig')),
+        media_type="application/json; charset=utf-8",
         headers={"Content-Disposition": "attachment; filename=memo_backup.json"}
     )
 
@@ -226,7 +230,7 @@ def backup_all(db: Session = Depends(get_db)):
 async def restore_backup(file: UploadFile = File(...), db: Session = Depends(get_db)):
     content = await file.read()
     try:
-        data = json.loads(content.decode('utf-8'))
+        data = json.loads(content.decode('utf-8-sig'))
         for item in data:
             memo = models.Memo(
                 title=item.get("title", ""), content=item.get("content", ""),
