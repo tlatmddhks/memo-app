@@ -122,10 +122,14 @@ body { background:var(--body-bg); color:var(--text); font-size:var(--fs); transi
   <!-- Search -->
   <div style="padding:0 12px 10px; flex-shrink:0;">
     <form method="get" action="/">
+      {% if sort %}<input type="hidden" name="sort" value="{{ sort }}">{% endif %}
+      {% if selected_tag %}<input type="hidden" name="tag" value="{{ selected_tag }}">{% endif %}
+      {% if selected_category %}<input type="hidden" name="category" value="{{ selected_category }}">{% endif %}
+      {% if favorite_filter %}<input type="hidden" name="favorite" value="{{ favorite_filter }}">{% endif %}
       <div class="input-group input-group-sm">
         <input type="text" name="search" class="form-control" placeholder="검색..." value="{{ search or '' }}" style="background:var(--body-bg);color:var(--text);border-color:var(--border);">
         <button class="btn btn-outline-secondary" type="submit"><i class="bi bi-search"></i></button>
-        {% if search %}<a href="/" class="btn btn-outline-danger"><i class="bi bi-x"></i></a>{% endif %}
+        {% if search %}<a href="/?{% if sort %}sort={{ sort }}&{% endif %}{% if selected_tag %}tag={{ selected_tag | urlencode }}&{% endif %}{% if selected_category %}category={{ selected_category | urlencode }}&{% endif %}{% if favorite_filter %}favorite={{ favorite_filter }}&{% endif %}" class="btn btn-outline-danger"><i class="bi bi-x"></i></a>{% endif %}
       </div>
     </form>
   </div>
@@ -134,8 +138,8 @@ body { background:var(--body-bg); color:var(--text); font-size:var(--fs); transi
     {% if trash_mode is not defined or not trash_mode %}
     <!-- Filter tabs -->
     <div class="px-3 pb-2 d-flex gap-1 flex-wrap">
-      <a href="/" class="btn btn-sm" style="font-size:.78rem;{% if not favorite_filter %}background:var(--primary);color:#fff;{% else %}border:1px solid var(--border);color:var(--text);{% endif %}">전체</a>
-      <a href="/?favorite=1" class="btn btn-sm" style="font-size:.78rem;{% if favorite_filter == '1' %}background:#ffc107;color:#000;border-color:#ffc107;{% else %}border:1px solid var(--border);color:var(--text);{% endif %}"><i class="bi bi-star-fill"></i> 즐겨찾기</a>
+      <a href="/?{% if sort and sort != 'updated' %}sort={{ sort }}&{% endif %}{% if search %}search={{ search | urlencode }}&{% endif %}" class="btn btn-sm" style="font-size:.78rem;{% if not favorite_filter and not selected_tag and not selected_category %}background:var(--primary);color:#fff;{% else %}border:1px solid var(--border);color:var(--text);{% endif %}">전체</a>
+      <a href="/?favorite=1{% if sort and sort != 'updated' %}&sort={{ sort }}{% endif %}{% if search %}&search={{ search | urlencode }}{% endif %}" class="btn btn-sm" style="font-size:.78rem;{% if favorite_filter == '1' %}background:#ffc107;color:#000;border-color:#ffc107;{% else %}border:1px solid var(--border);color:var(--text);{% endif %}"><i class="bi bi-star-fill"></i> 즐겨찾기</a>
       <a href="/trash" class="btn btn-sm" style="font-size:.78rem;border:1px solid var(--border);color:var(--text);">
         <i class="bi bi-trash"></i> 휴지통{% if trash_count %}<span class="badge bg-danger ms-1" style="font-size:.6rem;">{{ trash_count }}</span>{% endif %}
       </a>
@@ -146,9 +150,9 @@ body { background:var(--body-bg); color:var(--text); font-size:var(--fs); transi
     <div class="px-3 pb-2">
       <div class="section-label">카테고리</div>
       <div class="d-flex flex-wrap gap-1">
-        <a href="/" class="tag-badge text-decoration-none {% if not selected_category %}fw-bold{% endif %}" style="font-size:.7rem;">전체</a>
+        <a href="/?{% if sort and sort != 'updated' %}sort={{ sort }}&{% endif %}{% if search %}search={{ search | urlencode }}&{% endif %}{% if favorite_filter %}favorite={{ favorite_filter }}&{% endif %}{% if selected_tag %}tag={{ selected_tag | urlencode }}&{% endif %}" class="tag-badge text-decoration-none {% if not selected_category %}fw-bold{% endif %}" style="font-size:.7rem;">전체</a>
         {% for c in all_categories %}
-        <a href="/?category={{ c }}" class="tag-badge text-decoration-none {% if selected_category == c %}fw-bold{% endif %}" style="font-size:.7rem;">{{ c }}</a>
+        <a href="/?category={{ c | urlencode }}{% if sort and sort != 'updated' %}&sort={{ sort }}{% endif %}{% if search %}&search={{ search | urlencode }}{% endif %}{% if favorite_filter %}&favorite={{ favorite_filter }}{% endif %}{% if selected_tag %}&tag={{ selected_tag | urlencode }}{% endif %}" class="tag-badge text-decoration-none {% if selected_category == c %}fw-bold{% endif %}" style="font-size:.7rem;">{{ c }}</a>
         {% endfor %}
       </div>
     </div>
@@ -160,10 +164,10 @@ body { background:var(--body-bg); color:var(--text); font-size:var(--fs); transi
       <div class="section-label">태그</div>
       <div class="d-flex flex-wrap gap-1">
         {% for t in all_tags %}
-        <a href="/?tag={{ t }}" class="tag-badge text-decoration-none {% if selected_tag == t %}fw-bold{% endif %}" style="font-size:.7rem;">#{{ t }}</a>
+        <a href="/?tag={{ t | urlencode }}{% if sort and sort != 'updated' %}&sort={{ sort }}{% endif %}{% if search %}&search={{ search | urlencode }}{% endif %}{% if favorite_filter %}&favorite={{ favorite_filter }}{% endif %}{% if selected_category %}&category={{ selected_category | urlencode }}{% endif %}" class="tag-badge text-decoration-none {% if selected_tag == t %}fw-bold{% endif %}" style="font-size:.7rem;">#{{ t }}</a>
         {% endfor %}
         {% if selected_tag %}
-        <a href="/" class="tag-badge text-decoration-none" style="font-size:.7rem;background:#ffe0e0;color:#c00;border-color:#c00;">× 초기화</a>
+        <a href="/?{% if sort and sort != 'updated' %}sort={{ sort }}&{% endif %}{% if search %}search={{ search | urlencode }}&{% endif %}{% if favorite_filter %}favorite={{ favorite_filter }}&{% endif %}{% if selected_category %}category={{ selected_category | urlencode }}&{% endif %}" class="tag-badge text-decoration-none" style="font-size:.7rem;background:#ffe0e0;color:#c00;border-color:#c00;">× 초기화</a>
         {% endif %}
       </div>
     </div>
@@ -172,9 +176,9 @@ body { background:var(--body-bg); color:var(--text); font-size:var(--fs); transi
     <!-- Sort -->
     <div class="px-3 pb-2 d-flex align-items-center gap-1">
       <span class="section-label mb-0 me-1">정렬:</span>
-      <a href="/?sort=updated" class="btn btn-sm" style="font-size:.72rem;padding:1px 7px;{% if sort == 'updated' or not sort %}background:var(--primary);color:#fff;{% else %}border:1px solid var(--border);color:var(--text);{% endif %}">최신</a>
-      <a href="/?sort=title" class="btn btn-sm" style="font-size:.72rem;padding:1px 7px;{% if sort == 'title' %}background:var(--primary);color:#fff;{% else %}border:1px solid var(--border);color:var(--text);{% endif %}">제목</a>
-      <a href="/?sort=created" class="btn btn-sm" style="font-size:.72rem;padding:1px 7px;{% if sort == 'created' %}background:var(--primary);color:#fff;{% else %}border:1px solid var(--border);color:var(--text);{% endif %}">작성일</a>
+      <a href="/?sort=updated{% if search %}&search={{ search | urlencode }}{% endif %}{% if selected_tag %}&tag={{ selected_tag | urlencode }}{% endif %}{% if selected_category %}&category={{ selected_category | urlencode }}{% endif %}{% if favorite_filter %}&favorite={{ favorite_filter }}{% endif %}" class="btn btn-sm" style="font-size:.72rem;padding:1px 7px;{% if sort == 'updated' or not sort %}background:var(--primary);color:#fff;{% else %}border:1px solid var(--border);color:var(--text);{% endif %}">최신</a>
+      <a href="/?sort=title{% if search %}&search={{ search | urlencode }}{% endif %}{% if selected_tag %}&tag={{ selected_tag | urlencode }}{% endif %}{% if selected_category %}&category={{ selected_category | urlencode }}{% endif %}{% if favorite_filter %}&favorite={{ favorite_filter }}{% endif %}" class="btn btn-sm" style="font-size:.72rem;padding:1px 7px;{% if sort == 'title' %}background:var(--primary);color:#fff;{% else %}border:1px solid var(--border);color:var(--text);{% endif %}">제목</a>
+      <a href="/?sort=created{% if search %}&search={{ search | urlencode }}{% endif %}{% if selected_tag %}&tag={{ selected_tag | urlencode }}{% endif %}{% if selected_category %}&category={{ selected_category | urlencode }}{% endif %}{% if favorite_filter %}&favorite={{ favorite_filter }}{% endif %}" class="btn btn-sm" style="font-size:.72rem;padding:1px 7px;{% if sort == 'created' %}background:var(--primary);color:#fff;{% else %}border:1px solid var(--border);color:var(--text);{% endif %}">작성일</a>
     </div>
 
     <!-- Recent memos (JS populated) -->
@@ -228,10 +232,8 @@ body { background:var(--body-bg); color:var(--text); font-size:var(--fs); transi
     <a href="/backup" class="btn btn-sm flex-fill" style="font-size:.75rem;border:1px solid var(--border);color:var(--text);" title="전체 메모 JSON 백업"><i class="bi bi-download"></i> 백업</a>
     <label class="btn btn-sm flex-fill mb-0" style="font-size:.75rem;border:1px solid var(--border);color:var(--text);cursor:pointer;" title="백업 파일 복원">
       <i class="bi bi-upload"></i> 복원
+      <input type="file" accept=".json" style="display:none;" onchange="submitRestore(this)">
     </label>
-    <form id="restoreForm" action="/restore-backup" method="post" enctype="multipart/form-data" style="display:none;">
-      <input type="file" id="restoreFileInput" name="file" accept=".json" onchange="document.getElementById('restoreForm').submit()">
-    </form>
   </div>
 </div>
 
@@ -333,12 +335,15 @@ body { background:var(--body-bg); color:var(--text); font-size:var(--fs); transi
         </div>
         <div class="d-flex gap-2 align-items-center">
           <span id="counterDisplay" style="font-size:.72rem;color:var(--text-muted);"></span>
-          <form method="post" action="/memo/{{ memo.id }}/delete" onsubmit="return confirm('휴지통으로 이동합니까?')">
-            <button type="submit" class="btn btn-sm btn-outline-danger"><i class="bi bi-trash"></i> 삭제</button>
-          </form>
+          <button type="submit" form="deleteForm" class="btn btn-sm btn-outline-danger"><i class="bi bi-trash"></i> 삭제</button>
         </div>
       </div>
     </form>
+
+    <!-- 삭제 폼 (메인 폼 밖에 위치해야 중첩 문제 없음) -->
+    <form id="deleteForm" method="post" action="/memo/{{ memo.id }}/delete"
+          onsubmit="return confirm('휴지통으로 이동합니까?')"></form>
+
     <div class="mt-2" style="font-size:.75rem;color:var(--text-muted);">
       작성: {{ memo.created_at.strftime('%Y-%m-%d %H:%M') }} &nbsp;|&nbsp; 수정: {{ memo.updated_at.strftime('%Y-%m-%d %H:%M') }}
     </div>
@@ -404,29 +409,39 @@ const MODE = "{{ mode | default('') }}";
 const MEMO_ID = {% if memo is defined and memo %}{{ memo.id }}{% else %}null{% endif %};
 (function(){ if (['edit','new','trash_view'].includes(MODE)) document.body.classList.add('show-detail'); })();
 
-// ---- Restore file button ----
-document.querySelector('.sidebar-footer label:last-of-type')?.addEventListener('click', () => {
-  document.getElementById('restoreFileInput').click();
-});
+// ---- Restore ----
+function submitRestore(input) {
+  if (!input.files || !input.files[0]) return;
+  const fd = new FormData();
+  fd.append('file', input.files[0]);
+  showToast('복원 중...');
+  fetch('/restore-backup', {method:'POST', body: fd})
+    .then(() => { showToast('복원 완료!'); setTimeout(()=>window.location.href='/', 1000); })
+    .catch(() => showToast('복원 실패'));
+}
 
 // ---- Favorite ----
 function toggleFavorite(id) {
   fetch(`/memo/${id}/favorite`, {method:'POST'})
-    .then(r=>r.json()).then(d=>{
+    .then(r=>{ if(!r.ok) throw new Error('HTTP ' + r.status); return r.json(); })
+    .then(d=>{
       const i = document.querySelector('#favBtn i');
       if(i) i.className = d.is_favorite ? 'bi bi-star-fill' : 'bi bi-star';
-    });
+    })
+    .catch(err=>showToast('즐겨찾기 오류: ' + err.message));
 }
 
 // ---- Pin ----
 function togglePin(id) {
   fetch(`/memo/${id}/pin`, {method:'POST'})
-    .then(r=>r.json()).then(d=>{
+    .then(r=>{ if(!r.ok) throw new Error('HTTP ' + r.status); return r.json(); })
+    .then(d=>{
       const btn = document.getElementById('pinBtn');
       if(!btn) return;
       btn.querySelector('i').className = d.is_pinned ? 'bi bi-pin-fill' : 'bi bi-pin';
       btn.classList.toggle('pinned', d.is_pinned);
-    });
+    })
+    .catch(err=>showToast('고정 오류: ' + err.message));
 }
 
 // ---- Color ----
@@ -449,12 +464,36 @@ function addTag(tag) {
 function copyMemo() {
   const title = document.getElementById('memoTitle')?.value || '';
   const content = document.getElementById('memoContent')?.value || '';
-  navigator.clipboard.writeText(title + '\n\n' + content).then(()=>showToast('클립보드에 복사됐습니다'));
+  const text = title + '\n\n' + content;
+  if (navigator.clipboard && navigator.clipboard.writeText) {
+    navigator.clipboard.writeText(text).then(()=>showToast('클립보드에 복사됐습니다')).catch(()=>{
+      fallbackCopy(text);
+    });
+  } else {
+    fallbackCopy(text);
+  }
+}
+
+// ---- Clipboard fallback ----
+function fallbackCopy(text) {
+  const ta = document.createElement('textarea');
+  ta.value = text;
+  ta.style.cssText = 'position:fixed;top:-9999px;left:-9999px;';
+  document.body.appendChild(ta);
+  ta.select();
+  try { document.execCommand('copy'); showToast('클립보드에 복사됐습니다'); }
+  catch(e) { showToast('복사 실패: 수동으로 복사하세요'); }
+  document.body.removeChild(ta);
 }
 
 // ---- Share link ----
 function shareLink() {
-  navigator.clipboard.writeText(window.location.href).then(()=>showToast('링크가 복사됐습니다'));
+  const url = window.location.href;
+  if (navigator.clipboard && navigator.clipboard.writeText) {
+    navigator.clipboard.writeText(url).then(()=>showToast('링크가 복사됐습니다')).catch(()=>fallbackCopy(url));
+  } else {
+    fallbackCopy(url);
+  }
 }
 
 // ---- Markdown toggle ----
@@ -505,7 +544,8 @@ function doAutosave() {
   if (!form) return;
   const st = document.getElementById('autosaveStatus');
   fetch(`/memo/${MEMO_ID}/autosave`, {method:'POST', body: new FormData(form)})
-    .then(r=>r.json()).then(d=>{
+    .then(r=>{ if(!r.ok) throw new Error('HTTP ' + r.status); return r.json(); })
+    .then(d=>{
       if (st) { st.textContent = `자동저장 ${d.time}`; st.className = 'autosave-status saved'; }
     }).catch(()=>{ if (st) { st.textContent = '저장 실패'; st.className = 'autosave-status'; } });
 }
@@ -534,7 +574,9 @@ function loadRecentMemos() {
 }
 
 if (MODE === 'edit' && MEMO_ID) {
-  trackRecent(MEMO_ID, {{ memo.title | tojson if memo is defined and memo else '""' }});
+  {% if memo is defined and memo %}
+  trackRecent(MEMO_ID, {{ memo.title | tojson }});
+  {% endif %}
 }
 loadRecentMemos();
 
