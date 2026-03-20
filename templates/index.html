@@ -7,17 +7,83 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css" rel="stylesheet">
     <style>
-        body { background-color: #f8f9fa; }
+        :root {
+            --primary: #0d6efd;
+            --primary-light: #e7f3ff;
+            --sidebar-bg: #ffffff;
+            --body-bg: #f8f9fa;
+            --card-bg: #ffffff;
+            --text: #212529;
+            --text-muted: #888;
+            --border: #dee2e6;
+            --memo-hover: #f8f9fa;
+            --active-border: #0d6efd;
+        }
+        [data-theme="dark"] {
+            --primary: #4d94ff;
+            --primary-light: #1a2a4a;
+            --sidebar-bg: #1e1e2e;
+            --body-bg: #13131f;
+            --card-bg: #1e1e2e;
+            --text: #e0e0e0;
+            --text-muted: #888;
+            --border: #333355;
+            --memo-hover: #252540;
+            --active-border: #4d94ff;
+        }
+        [data-theme="green"] {
+            --primary: #28a745;
+            --primary-light: #e8f5e9;
+            --sidebar-bg: #f0faf0;
+            --body-bg: #e8f5e9;
+            --card-bg: #ffffff;
+            --text: #1a3a1a;
+            --text-muted: #6a8a6a;
+            --border: #c8e6c9;
+            --memo-hover: #f0faf0;
+            --active-border: #28a745;
+        }
+        [data-theme="purple"] {
+            --primary: #7c3aed;
+            --primary-light: #ede9fe;
+            --sidebar-bg: #faf5ff;
+            --body-bg: #f3eeff;
+            --card-bg: #ffffff;
+            --text: #2d1b69;
+            --text-muted: #7c6a9a;
+            --border: #ddd6fe;
+            --memo-hover: #f5f0ff;
+            --active-border: #7c3aed;
+        }
+        [data-theme="rose"] {
+            --primary: #e11d48;
+            --primary-light: #fff1f2;
+            --sidebar-bg: #fff5f7;
+            --body-bg: #fff1f2;
+            --card-bg: #ffffff;
+            --text: #4c0519;
+            --text-muted: #9f4a60;
+            --border: #fecdd3;
+            --memo-hover: #fff5f7;
+            --active-border: #e11d48;
+        }
+
+        body {
+            background-color: var(--body-bg);
+            color: var(--text);
+            transition: background 0.3s, color 0.3s;
+        }
         .sidebar {
             height: 100vh;
             position: fixed;
             left: 0;
             top: 0;
             width: 300px;
-            background: #fff;
-            border-right: 1px solid #dee2e6;
+            background: var(--sidebar-bg);
+            border-right: 1px solid var(--border);
             overflow-y: auto;
             z-index: 100;
+            transition: background 0.3s;
         }
         .main-content {
             margin-left: 300px;
@@ -26,21 +92,22 @@
         }
         .memo-item {
             padding: 12px 16px;
-            border-bottom: 1px solid #f0f0f0;
+            border-bottom: 1px solid var(--border);
             cursor: pointer;
             transition: background 0.15s;
         }
-        .memo-item:hover { background: #f8f9fa; }
-        .memo-item.active { background: #e7f3ff; border-left: 3px solid #0d6efd; }
-        .memo-title { font-weight: 600; font-size: 0.9rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-        .memo-preview { font-size: 0.78rem; color: #888; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-        .memo-date { font-size: 0.72rem; color: #aaa; }
+        .memo-item:hover { background: var(--memo-hover); }
+        .memo-item.active { background: var(--primary-light); border-left: 3px solid var(--active-border); }
+        .memo-title { font-weight: 600; font-size: 0.9rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; color: var(--text); }
+        .memo-preview { font-size: 0.78rem; color: var(--text-muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .memo-date { font-size: 0.72rem; color: var(--text-muted); }
         .editor-area {
-            background: #fff;
+            background: var(--card-bg);
             border-radius: 12px;
             box-shadow: 0 2px 12px rgba(0,0,0,0.07);
             padding: 32px;
             min-height: 80vh;
+            transition: background 0.3s;
         }
         .empty-state {
             display: flex;
@@ -48,23 +115,62 @@
             align-items: center;
             justify-content: center;
             min-height: 70vh;
-            color: #aaa;
+            color: var(--text-muted);
         }
-        textarea { resize: none; border: none; outline: none; width: 100%; font-size: 1rem; line-height: 1.7; }
+        textarea {
+            resize: none;
+            border: none;
+            outline: none;
+            width: 100%;
+            font-size: 1rem;
+            line-height: 1.7;
+            background: transparent;
+            color: var(--text);
+        }
         textarea:focus { box-shadow: none; }
         input[type="text"].title-input {
             border: none;
-            border-bottom: 2px solid #e9ecef;
+            border-bottom: 2px solid var(--border);
             border-radius: 0;
             font-size: 1.5rem;
             font-weight: 700;
             padding: 0 0 8px 0;
             width: 100%;
             outline: none;
+            background: transparent;
+            color: var(--text);
         }
-        input[type="text"].title-input:focus { border-bottom-color: #0d6efd; box-shadow: none; }
+        input[type="text"].title-input:focus { border-bottom-color: var(--primary); box-shadow: none; }
         .sidebar-header { padding: 20px 16px 10px; }
         .search-box { padding: 0 12px 12px; }
+        .tag-badge {
+            font-size: 0.72rem;
+            padding: 2px 8px;
+            border-radius: 12px;
+            background: var(--primary-light);
+            color: var(--primary);
+            cursor: pointer;
+            border: 1px solid var(--primary);
+            display: inline-block;
+            margin: 2px 2px 2px 0;
+        }
+        .tag-input-container { position: relative; }
+        .favorite-btn { background: none; border: none; padding: 0; cursor: pointer; font-size: 1.2rem; }
+        .favorite-btn .bi-star-fill { color: #ffc107; }
+        .favorite-btn .bi-star { color: var(--text-muted); }
+        .theme-dot {
+            width: 22px; height: 22px;
+            border-radius: 50%;
+            display: inline-block;
+            cursor: pointer;
+            border: 2px solid transparent;
+            transition: transform 0.15s;
+        }
+        .theme-dot:hover { transform: scale(1.2); }
+        .theme-dot.active { border-color: var(--text); }
+        .filter-btn { font-size: 0.8rem; }
+        .tags-section { padding: 0 12px 8px; }
+        .sidebar-divider { border-color: var(--border); margin: 4px 0; }
     </style>
 </head>
 <body>
@@ -72,13 +178,25 @@
 <!-- 사이드바 -->
 <div class="sidebar">
     <div class="sidebar-header d-flex justify-content-between align-items-center">
-        <h5 class="mb-0 fw-bold"><i class="bi bi-journal-text text-primary"></i> 메모장</h5>
-        <a href="/memo/new" class="btn btn-primary btn-sm"><i class="bi bi-plus-lg"></i> 새 메모</a>
+        <h5 class="mb-0 fw-bold"><i class="bi bi-journal-text" style="color:var(--primary)"></i> 메모장</h5>
+        <div class="d-flex align-items-center gap-2">
+            <!-- 테마 선택 -->
+            <div class="d-flex gap-1 align-items-center">
+                <span class="theme-dot" data-theme="default" style="background:#0d6efd;" title="기본" onclick="setTheme('default')"></span>
+                <span class="theme-dot" data-theme="dark" style="background:#1e1e2e;border:2px solid #555;" title="다크" onclick="setTheme('dark')"></span>
+                <span class="theme-dot" data-theme="green" style="background:#28a745;" title="그린" onclick="setTheme('green')"></span>
+                <span class="theme-dot" data-theme="purple" style="background:#7c3aed;" title="퍼플" onclick="setTheme('purple')"></span>
+                <span class="theme-dot" data-theme="rose" style="background:#e11d48;" title="로즈" onclick="setTheme('rose')"></span>
+            </div>
+            <a href="/memo/new" class="btn btn-sm" style="background:var(--primary);color:#fff;"><i class="bi bi-plus-lg"></i></a>
+        </div>
     </div>
+
+    <!-- 검색 -->
     <div class="search-box">
         <form method="get" action="/">
             <div class="input-group input-group-sm">
-                <input type="text" name="search" class="form-control" placeholder="검색..." value="{{ search or '' }}">
+                <input type="text" name="search" class="form-control" placeholder="검색..." value="{{ search or '' }}" style="background:var(--body-bg);color:var(--text);border-color:var(--border);">
                 <button class="btn btn-outline-secondary" type="submit"><i class="bi bi-search"></i></button>
                 {% if search %}
                 <a href="/" class="btn btn-outline-danger"><i class="bi bi-x"></i></a>
@@ -87,19 +205,60 @@
         </form>
     </div>
 
+    <!-- 필터 -->
+    <div class="px-3 pb-2 d-flex gap-1 flex-wrap">
+        <a href="/" class="btn btn-sm filter-btn {% if not favorite_filter %}btn-secondary{% else %}btn-outline-secondary{% endif %}">전체</a>
+        <a href="/?favorite=1" class="btn btn-sm filter-btn {% if favorite_filter == '1' %}btn-warning{% else %}btn-outline-warning{% endif %}"><i class="bi bi-star-fill"></i> 즐겨찾기</a>
+    </div>
+
+    <!-- 태그 필터 -->
+    {% if all_tags %}
+    <div class="tags-section">
+        <div class="d-flex flex-wrap gap-1">
+            {% for t in all_tags %}
+            <a href="/?tag={{ t }}" class="tag-badge text-decoration-none {% if selected_tag == t %}fw-bold{% endif %}">
+                #{{ t }}
+            </a>
+            {% endfor %}
+            {% if selected_tag %}
+            <a href="/" class="tag-badge text-decoration-none" style="background:#ffe0e0;color:#c00;border-color:#c00;">x 초기화</a>
+            {% endif %}
+        </div>
+    </div>
+    {% endif %}
+
+    <hr class="sidebar-divider">
+
+    <!-- 메모 목록 -->
     {% if memos %}
         {% for m in memos %}
-        <a href="/memo/{{ m.id }}" class="text-decoration-none text-dark">
-            <div class="memo-item {% if memo and memo.id == m.id %}active{% endif %}">
-                <div class="memo-title">{{ m.title }}</div>
+        <a href="/memo/{{ m.id }}" class="text-decoration-none">
+            <div class="memo-item {% if memo is defined and memo and memo.id == m.id %}active{% endif %}">
+                <div class="d-flex justify-content-between align-items-start">
+                    <div class="memo-title flex-grow-1">
+                        {% if m.is_favorite %}<i class="bi bi-star-fill text-warning me-1" style="font-size:0.75rem;"></i>{% endif %}
+                        {{ m.title }}
+                    </div>
+                </div>
                 <div class="memo-preview">{{ m.content[:40] }}</div>
-                <div class="memo-date">{{ m.updated_at.strftime('%Y-%m-%d %H:%M') }}</div>
+                <div class="d-flex justify-content-between align-items-center mt-1">
+                    <div>
+                        {% if m.tags %}
+                            {% for t in m.tags.split(',') %}
+                                {% if t.strip() %}
+                                <span class="tag-badge" style="font-size:0.65rem;padding:1px 6px;">#{{ t.strip() }}</span>
+                                {% endif %}
+                            {% endfor %}
+                        {% endif %}
+                    </div>
+                    <div class="memo-date">{{ m.updated_at.strftime('%m-%d %H:%M') }}</div>
+                </div>
             </div>
         </a>
         {% endfor %}
     {% else %}
-        <div class="text-center text-muted py-4" style="font-size:0.85rem;">
-            {% if search %}검색 결과가 없습니다{% else %}메모가 없습니다{% endif %}
+        <div class="text-center py-4" style="font-size:0.85rem;color:var(--text-muted);">
+            {% if search %}검색 결과가 없습니다{% elif favorite_filter %}즐겨찾기가 없습니다{% else %}메모가 없습니다{% endif %}
         </div>
     {% endif %}
 </div>
@@ -111,33 +270,58 @@
     <div class="editor-area">
         <form method="post" action="/memo">
             <input type="text" name="title" class="title-input form-control mb-3" placeholder="제목을 입력하세요" required autofocus>
-            <hr>
-            <textarea name="content" class="form-control" rows="25" placeholder="내용을 입력하세요..." required></textarea>
+            <div class="mb-3">
+                <input type="text" name="tags" class="form-control form-control-sm" placeholder="태그 입력 (쉼표로 구분, 예: 업무, 개인)" style="background:var(--body-bg);color:var(--text);border-color:var(--border);">
+                {% if all_tags %}
+                <div class="mt-1">
+                    {% for t in all_tags %}
+                    <span class="tag-badge" onclick="addTag(this, '{{ t }}')">+ #{{ t }}</span>
+                    {% endfor %}
+                </div>
+                {% endif %}
+            </div>
+            <hr style="border-color:var(--border);">
+            <textarea name="content" class="form-control" rows="22" placeholder="내용을 입력하세요..." required style="background:transparent;color:var(--text);border:none;"></textarea>
             <div class="mt-3 d-flex gap-2">
-                <button type="submit" class="btn btn-primary"><i class="bi bi-save"></i> 저장</button>
-                <a href="/" class="btn btn-outline-secondary">취소</a>
+                <button type="submit" class="btn btn-sm" style="background:var(--primary);color:#fff;"><i class="bi bi-save"></i> 저장</button>
+                <a href="/" class="btn btn-outline-secondary btn-sm">취소</a>
             </div>
         </form>
     </div>
 
-    {% elif mode == "edit" and memo %}
+    {% elif mode == "edit" and memo is defined and memo %}
     <!-- 메모 수정 -->
     <div class="editor-area">
-        <form method="post" action="/memo/{{ memo.id }}/update">
-            <input type="text" name="title" class="title-input form-control mb-3" value="{{ memo.title }}" required>
-            <hr>
-            <textarea name="content" class="form-control" rows="25" required>{{ memo.content }}</textarea>
-            <div class="mt-3 d-flex gap-2 justify-content-between">
+        <form method="post" action="/memo/{{ memo.id }}/update" id="editForm">
+            <div class="d-flex align-items-center gap-2 mb-3">
+                <input type="text" name="title" class="title-input form-control flex-grow-1" value="{{ memo.title }}" required>
+                <button type="button" class="favorite-btn" onclick="toggleFavorite({{ memo.id }})" id="favBtn">
+                    <i class="bi {% if memo.is_favorite %}bi-star-fill{% else %}bi-star{% endif %}"></i>
+                </button>
+            </div>
+            <div class="mb-3">
+                <input type="text" name="tags" id="tagsInput" class="form-control form-control-sm" placeholder="태그 (쉼표로 구분)" value="{{ memo.tags or '' }}" style="background:var(--body-bg);color:var(--text);border-color:var(--border);">
+                {% if all_tags %}
+                <div class="mt-1">
+                    {% for t in all_tags %}
+                    <span class="tag-badge" onclick="addTag(this, '{{ t }}')">+ #{{ t }}</span>
+                    {% endfor %}
+                </div>
+                {% endif %}
+            </div>
+            <hr style="border-color:var(--border);">
+            <textarea name="content" class="form-control" rows="20" required style="background:transparent;color:var(--text);border:none;">{{ memo.content }}</textarea>
+            <div class="mt-3 d-flex justify-content-between align-items-center">
                 <div class="d-flex gap-2">
-                    <button type="submit" class="btn btn-primary"><i class="bi bi-save"></i> 저장</button>
-                    <a href="/" class="btn btn-outline-secondary">취소</a>
+                    <button type="submit" class="btn btn-sm" style="background:var(--primary);color:#fff;"><i class="bi bi-save"></i> 저장</button>
+                    <a href="/" class="btn btn-outline-secondary btn-sm">취소</a>
                 </div>
                 <form method="post" action="/memo/{{ memo.id }}/delete" onsubmit="return confirm('정말 삭제하시겠습니까?')">
-                    <button type="submit" class="btn btn-outline-danger"><i class="bi bi-trash"></i> 삭제</button>
+                    <button type="submit" class="btn btn-outline-danger btn-sm"><i class="bi bi-trash"></i> 삭제</button>
                 </form>
             </div>
         </form>
-        <div class="mt-3 text-muted" style="font-size:0.8rem;">
+        <div class="mt-3" style="font-size:0.8rem;color:var(--text-muted);">
             작성: {{ memo.created_at.strftime('%Y-%m-%d %H:%M') }} &nbsp;|&nbsp; 수정: {{ memo.updated_at.strftime('%Y-%m-%d %H:%M') }}
         </div>
     </div>
@@ -145,13 +329,58 @@
     {% else %}
     <!-- 빈 화면 -->
     <div class="empty-state">
-        <i class="bi bi-journal-plus" style="font-size:4rem;"></i>
+        <i class="bi bi-journal-plus" style="font-size:4rem;color:var(--text-muted);"></i>
         <p class="mt-3 fs-5">새 메모를 작성하거나 목록에서 메모를 선택하세요</p>
-        <a href="/memo/new" class="btn btn-primary mt-2"><i class="bi bi-plus-lg"></i> 새 메모 작성</a>
+        <a href="/memo/new" class="btn btn-sm mt-2" style="background:var(--primary);color:#fff;"><i class="bi bi-plus-lg"></i> 새 메모 작성</a>
     </div>
     {% endif %}
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+    // 테마 관리
+    function setTheme(theme) {
+        if (theme === 'default') {
+            document.documentElement.removeAttribute('data-theme');
+            localStorage.setItem('theme', 'default');
+        } else {
+            document.documentElement.setAttribute('data-theme', theme);
+            localStorage.setItem('theme', theme);
+        }
+        document.querySelectorAll('.theme-dot').forEach(d => d.classList.remove('active'));
+        document.querySelector(`.theme-dot[data-theme="${theme}"]`).classList.add('active');
+    }
+
+    // 페이지 로드 시 테마 복원
+    (function() {
+        const saved = localStorage.getItem('theme') || 'default';
+        setTheme(saved);
+    })();
+
+    // 즐겨찾기 토글
+    function toggleFavorite(memoId) {
+        fetch(`/memo/${memoId}/favorite`, { method: 'POST' })
+            .then(r => r.json())
+            .then(data => {
+                const icon = document.querySelector('#favBtn i');
+                if (data.is_favorite) {
+                    icon.className = 'bi bi-star-fill';
+                } else {
+                    icon.className = 'bi bi-star';
+                }
+            });
+    }
+
+    // 태그 추가
+    function addTag(el, tag) {
+        const input = document.querySelector('input[name="tags"]');
+        if (!input) return;
+        const current = input.value.split(',').map(t => t.trim()).filter(t => t);
+        if (!current.includes(tag)) {
+            current.push(tag);
+            input.value = current.join(', ');
+        }
+    }
+</script>
 </body>
 </html>
